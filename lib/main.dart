@@ -1,4 +1,5 @@
 import 'package:cripton_update/pages/homepage.dart';
+import 'package:cripton_update/pages/profileupdate.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -17,6 +18,6 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: HomePage());
+        home: ProfileUpdate());
   }
 }
