@@ -1,17 +1,38 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-class ProfileUpdate extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+
+class ProfileUpdate extends StatefulWidget {
   const ProfileUpdate({super.key});
+
+  @override
+  State<ProfileUpdate> createState() => _ProfileUpdateState();
+}
+
+class _ProfileUpdateState extends State<ProfileUpdate> {
+  var fileName = '';
+
+  var selectedImagePath = '';
+
+  File? imageFile;
 
   @override
   Widget build(BuildContext context) {
     var screenWidth = MediaQuery.of(context).size.width;
     var screenHeight = MediaQuery.of(context).size.height;
+
+    // final profileUpdateViewModel = Provider.of<ProfileUpdateViewModel>(context, listen: false);
+
     return Scaffold(
+      extendBody: true,
       appBar: AppBar(
-        leading: Icon(
-          Icons.arrow_back,
-          color: Colors.black,
+        leading: GestureDetector(
+          onTap: () {},
+          child: Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
         ),
         elevation: 0.0,
         backgroundColor: Colors.white,
@@ -33,7 +54,7 @@ class ProfileUpdate extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(8.0),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.5),
@@ -57,34 +78,22 @@ class ProfileUpdate extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      flex: 4,
+                      flex: 8,
                       child: TextField(
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: "Enter User ID",
-                        ),
+                            border: InputBorder.none,
+                            hintText: "Enter User ID",
+                            helperStyle: TextStyle(color: Colors.grey)),
                       ),
                     ),
                     Expanded(
                       flex: 1,
                       child: Icon(Icons.search),
                     ),
-                    // Text(
-                    //   "2320348",
-                    //   style: TextStyle(
-                    //     fontWeight: FontWeight.bold,
-                    //     fontSize: 15,
-                    //   ),
-                    // ),
-                    // Spacer(),
-                    // Icon(
-                    //   Icons.search,
-                    //   size: 30,
-                    // ),
                   ],
                 ),
               ),
@@ -108,26 +117,145 @@ class ProfileUpdate extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Expanded(
-                    flex: 2,
+                  GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet(
+                          context: context,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(40))),
+                          builder: (BuildContext context) {
+                            return Container(
+                              height: 200,
+                              decoration: BoxDecoration(
+                                  color: Colors.green,
+                                  borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(40),
+                                      topLeft: Radius.circular(40))),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    height: screenHeight * 0.020,
+                                  ),
+                                  Text(
+                                    "Change Image",
+                                    style: TextStyle(
+                                        fontSize: 25, color: Colors.white),
+                                  ),
+                                  SizedBox(
+                                    height: screenHeight * 0.010,
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 15.0, right: 15.0),
+                                    child: Divider(
+                                      height: 1.0,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: screenHeight * 0.020,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 30),
+                                        child: Icon(Icons.camera),
+                                      ),
+                                      SizedBox(
+                                        width: screenWidth * 0.020,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          // await profileUpdateViewModel.getImage(ImageSource.camera);
+                                          await getImage(ImageSource.camera);
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text(
+                                          "Take Photo",
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              color: Colors.white),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: screenHeight * 0.020,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 30),
+                                        child: Icon(Icons.photo_camera),
+                                      ),
+                                      SizedBox(
+                                        width: screenWidth * 0.020,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          // await profileUpdateViewModel.getImage(ImageSource.gallery);
+                                          await getImage(ImageSource.gallery);
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text(
+                                          "Upload Photo",
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          });
+                    },
                     child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Icon(
-                            Icons.image,
-                            color: Colors.grey,
-                            size: 110,
-                          ),
-                          Text(
-                            "Image not found",
-                            style: TextStyle(
-                              color: Colors.red,
-                            ),
-                          ),
+                          imageFile == null
+                              ? Container(
+                                  height: 120,
+                                  width: 120,
+                                  color: Colors.amber,
+                                  child: Image.asset(
+                                    "assets/images/no-image.png",
+                                  ))
+                              : Container(
+                                  height: 120,
+                                  width: 120,
+                                  child: Image(
+                                    image: FileImage(imageFile!),
+                                    fit: BoxFit.cover,
+                                  ),
+                                  // decoration: BoxDecoration(
+                                  //   image: DecorationImage(
+                                  //       image: FileImage(imageFile!)
+                                  //           as ImageProvider),
+                                  // ),
+                                ),
+                          // Visibility(
+                          //   visible: profileUpdateViewModel.selectedImagePath == "" ? true : false ,
+                          //   child: Text(
+                          //     "Image not found",
+                          //     style: TextStyle(
+                          //       color: Colors.red,
+                          //     ),
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),
+                  ),
+                  SizedBox(
+                    width: 5,
                   ),
                   Expanded(
                     flex: 3,
@@ -210,27 +338,6 @@ class ProfileUpdate extends StatelessWidget {
                         SizedBox(
                           height: screenHeight * 0.005,
                         ),
-                        Container(
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Color(0xff7CAC42),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "M",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: screenHeight * 0.005,
-                        ),
                       ],
                     ),
                   ),
@@ -241,5 +348,18 @@ class ProfileUpdate extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> getImage(ImageSource source) async {
+    final pickedFile = await ImagePicker().pickImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+        selectedImagePath = pickedFile.path;
+        print(
+            "immmmmmmmmmmmmmmmmmgggggggggggggg" + selectedImagePath.toString());
+
+        imageFile = File(pickedFile.path);
+      });
+    } else {}
   }
 }
