@@ -38,6 +38,8 @@ dependencies:
   font_awesome_flutter: ^10.3.0
   dropdown_search: ^0.6.3
   image_picker: ^0.8.6+3
+  get: ^4.6.5
+  date_util: ^0.1.4
 
 dev_dependencies:
   flutter_test:

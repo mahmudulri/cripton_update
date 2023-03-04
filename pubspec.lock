@@ -57,6 +57,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
+  date_util:
+    dependency: "direct main"
+    description:
+      name: date_util
+      sha256: d39bd95a24d3c3f9b1492a94b96cb6bacd4071a26b3263f04ca8ad340230c3dc
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.4"
   dropdown_search:
     dependency: "direct main"
     description:
@@ -112,6 +120,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "10.3.0"
+  get:
+    dependency: "direct main"
+    description:
+      name: get
+      sha256: "2ba20a47c8f1f233bed775ba2dd0d3ac97b4cf32fc17731b3dfc672b06b0e92a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.6.5"
   http:
     dependency: transitive
     description:
